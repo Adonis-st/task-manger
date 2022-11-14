@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.column-icon-color:nth-child(3n -2) {
+  background-color: #49c4e5;
+}
+.column-icon-color:nth-child(3n -1) {
+  background-color: #8471f2;
+}
+.column-icon-color:nth-child(3n) {
+  background-color: #67e2ae;
+}
+
+@layer components {
+  /* Typography */
+  .heading-xl {
+    @apply text-[1.5rem] font-bold leading-[1.875rem] text-coal;
+  }
+
+  .heading-l {
+    @apply text-[1.125rem] font-bold leading-[1.438rem];
+  }
+
+  .heading-m {
+    @apply text-[.938rem] font-bold leading-[1.188rem];
+  }
+
+  .heading-s {
+    @apply text-[.75rem] font-bold leading-[.938rem] tracking-[0.15rem];
+  }
+
+  .body-l {
+    @apply text-[.813rem] font-medium leading-[1.438rem];
+  }
+
+  .body-m {
+    @apply text-[.75rem] font-bold leading-[.938rem];
+  }
+
+  /* Interactive Elements */
+
+  /* Buttons */
+
+  .btn-primary-l {
+    @apply heading-m cursor-pointer rounded-full bg-purple py-4 px-6 text-white hover:bg-purple_hover;
+  }
+
+  .btn-primary-s {
+    @apply cursor-pointer rounded-full bg-purple py-2 px-5 text-white hover:bg-purple_hover;
+  }
+
+  .btn-secondary-l {
+    @apply heading-m cursor-pointer rounded-full bg-purple/[.15] py-4 px-6 text-purple hover:bg-purple/[.30];
+  }
+
+  .btn-secondary-s {
+    @apply cursor-pointer rounded-full bg-purple/[.15] py-2 px-5 text-purple  hover:bg-purple/[.30];
+  }
+
+  /* forms */
+  .input-border {
+    @apply rounded-[4px] border border-medium_gray/[.25] px-3;
+  }
+
+  .label-title {
+    @apply text-[.75rem] font-semibold leading-[.938rem] tracking-wide text-medium_gray;
+  }
+
+  /* Columns */
+  .column-icon-color {
+    @apply inline-block aspect-square w-3 rounded-full;
+  }
+
+  /* .test p {
+    background-color: green;
+  } */
+}
