@@ -10,8 +10,10 @@ import {
   createTaskSchema,
   getAllTaskSchema,
   getSubTaskSchema,
-  createSubTaskSchema,
+  createSubtaskSchema,
   updateTaskColSchema,
+  toggleSubtaskSchema,
+  updateSubtaskSchema,
 } from "../../../schema/task.schema";
 
 import {
@@ -20,6 +22,7 @@ import {
 } from "../../../schema/column.schema";
 
 import { router, publicProcedure } from "../trpc";
+import { connect } from "http2";
 
 export const boardsRouter = router({
   getAllBoards: publicProcedure.query(({ ctx }) => {
@@ -29,10 +32,10 @@ export const boardsRouter = router({
       },
     });
   }),
+
   addBoard: publicProcedure.input(boardSchema).mutation(({ ctx, input }) => {
     const { boardForm, columnsForm } = input;
     const { title } = boardForm;
-
     return ctx.prisma.boards.create({
       data: {
         title,
@@ -83,6 +86,16 @@ export const boardsRouter = router({
       });
     }),
 
+  deleteBoard: publicProcedure
+    .input(z.string().cuid())
+    .mutation(({ ctx, input: id }) => {
+      return ctx.prisma.boards.delete({
+        where: {
+          id,
+        },
+      });
+    }),
+
   getAllColumns: publicProcedure
     .input(getAllColumnsSchema)
     .query(({ ctx, input }) => {
@@ -97,14 +110,14 @@ export const boardsRouter = router({
   addColumn: publicProcedure
     .input(createColumnSchema)
     .mutation(({ ctx, input }) => {
-      const { boardId, data } = input;
+      const { boardId: id, data } = input;
       const { title } = data;
       return ctx.prisma.columns.create({
         data: {
           title,
           board: {
             connect: {
-              id: boardId,
+              id,
             },
           },
         },
@@ -114,7 +127,7 @@ export const boardsRouter = router({
   addTask: publicProcedure
     .input(createTaskSchema)
     .mutation(({ ctx, input }) => {
-      const { columnId, taskForm, subtaskForm } = input;
+      const { columnId: id, taskForm, subtaskData } = input;
       const { title, description } = taskForm;
       return ctx.prisma.tasks.create({
         data: {
@@ -122,58 +135,110 @@ export const boardsRouter = router({
           description,
           SubTasks: {
             createMany: {
-              data: subtaskForm,
+              data: subtaskData,
             },
           },
           columns: {
             connect: {
-              id: columnId,
+              id,
             },
           },
         },
       });
     }),
 
-  changeTaskCol: publicProcedure
+  deleteTask: publicProcedure
+    .input(z.string().cuid())
+    .mutation(({ ctx, input: id }) => {
+      return ctx.prisma.tasks.delete({
+        where: {
+          id,
+        },
+      });
+    }),
+
+  updateTaskCol: publicProcedure
     .input(updateTaskColSchema)
     .mutation(({ ctx, input }) => {
-      const { id, newColumnId } = input;
+      const { id, newColumnId: columnId, title, description } = input;
       return ctx.prisma.tasks.update({
         where: {
           id,
         },
         data: {
-          columnId: newColumnId,
+          title,
+          description,
+          columnId,
         },
       });
     }),
 
-  // SubTasks
-  // getAllSubTasks: publicProcedure
-  //   .input(getSubTaskSchema)
-  //   .query(({ ctx, input }) => {
-  //     const { tasksId } = input;
-  //     return ctx.prisma.subTasks.findMany({
-  //       where: {
-  //         tasksId: tasksId,
-  //       },
-  //     });
-  //   }),
-  // addSubTask: publicProcedure
-  //   .input(createSubTaskSchema)
-  //   .mutation(({ ctx, input }) => {
-  //     const { id, data } = input;
-  //     const { status, title } = data;
-  //     return ctx.prisma.subTasks.create({
-  //       data: {
-  //         title,
+  addSubtask: publicProcedure
+    .input(z.string().cuid())
+    .mutation(({ ctx, input: id }) => {
+      // const { id, data } = input;
+      // const { title, isCompleted } = data;
+      return ctx.prisma.subTasks.create({
+        data: {
+          title: "",
+          isCompleted: false,
+          tasks: {
+            connect: {
+              id,
+            },
+          },
+        },
+      });
+    }),
 
-  //         tasks: {
-  //           connect: {
-  //             id,
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }),
+  updateSubtask: publicProcedure
+    .input(updateSubtaskSchema)
+    .mutation(({ ctx, input }) => {
+      const { id, title } = input;
+      return ctx.prisma.subTasks.update({
+        where: {
+          id,
+        },
+        data: {
+          title,
+        },
+      });
+    }),
+
+  deleteSubtask: publicProcedure
+    .input(z.string().cuid())
+    .mutation(({ ctx, input: id }) => {
+      return ctx.prisma.subTasks.delete({
+        where: {
+          id,
+        },
+      });
+    }),
+
+  toggleSubTask: publicProcedure
+    .input(toggleSubtaskSchema)
+    .mutation(({ ctx, input }) => {
+      const { id, isCompleted } = input;
+      return ctx.prisma.subTasks.update({
+        where: {
+          id,
+        },
+        data: {
+          isCompleted,
+        },
+      });
+    }),
+
+  findNewBoard: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.boards.findFirst({
+      where: {
+        User: {
+          id: ctx.session?.user?.id,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }),
 });

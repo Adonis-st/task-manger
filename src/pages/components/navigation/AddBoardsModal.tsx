@@ -1,28 +1,37 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
-import { boardInput, CreateBoardInput } from "../../../schema/board.schema";
+import { boardInput } from "../../../schema/board.schema";
 import { trpc } from "../../../utils/trpc";
 
-interface AddBoardsModalProps {
-  displayModal: boolean;
+interface Props {
   setDisplayModal: (value: boolean | ((prevState: boolean) => boolean)) => void;
+  refetch: any;
+  getAllBoards: any;
+  latestBoard: any;
 }
 
 export const AddBoardsModal = ({
-  displayModal,
   setDisplayModal,
-}: AddBoardsModalProps) => {
-  const { mutate } = trpc.boards.addBoard.useMutation();
+  refetch,
+  getAllBoards,
+  latestBoard,
+}: Props) => {
+  const router = useRouter();
   const closeModal = () => setDisplayModal(false);
-
   const [boardForm, setBoardForm] = useState({
     title: "",
   });
-
   const [columnsForm, setColumnsForm] = useState([
     { title: "Todo" },
     { title: "Doing" },
+    { title: "Done" },
   ]);
+  // const { data: testing2 } = trpc.boards.findNewBoard.useQuery();
+
+  const { mutate, isSuccess, isIdle } = trpc.boards.addBoard.useMutation({
+    onSuccess: () => {},
+  });
 
   const addCol = () => {
     if (columnsForm.length >= 4) {
@@ -57,14 +66,23 @@ export const AddBoardsModal = ({
     }));
   };
 
-  const onSubmit = () => {
+  const onSubmit = (e: any) => {
+    e.preventDefault();
     const boardInputs: boardInput = { boardForm, columnsForm };
     mutate(boardInputs);
+    console.log(isSuccess + "sucess");
+    console.log(isIdle + "idle");
+
+    if (isSuccess) {
+      console.log("yess");
+    }
+
+    // router.push(`/boards/${latestBoard?.id}`);
   };
 
   return (
     <>
-      <Transition appear show={displayModal} as={Fragment}>
+      <Transition appear show={true} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
@@ -89,8 +107,8 @@ export const AddBoardsModal = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="heading-l">
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl bg-white p-6 text-left  align-middle shadow-xl transition-all dark:bg-dark_gray">
+                  <Dialog.Title as="h3" className="heading-l dark:text-white">
                     Add New Board
                   </Dialog.Title>
                   <div className="mt-2">
@@ -147,10 +165,10 @@ export const AddBoardsModal = ({
 
                       <button
                         type="submit"
-                        className="btn-primary-s mb-2"
-                        // onClick={() => console.log(boardInputs)}
+                        disabled={!boardForm.title}
+                        className="btn-primary-s mb-2 disabled:pointer-events-none disabled:opacity-80"
                       >
-                        Create Task
+                        Create Board
                       </button>
                     </form>
                   </div>

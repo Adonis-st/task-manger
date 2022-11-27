@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
-import { Task } from "./Task";
-
+import { Task } from "./Task/Task";
 interface ColProps {
   col: {
     title: string;
@@ -10,9 +9,11 @@ interface ColProps {
     [Tasks: string]: any;
   };
   [currentColumns: string]: any;
+  refetch: any;
+  index: number;
 }
 
-export const Column = ({ col, currentColumns }: ColProps) => {
+export const Column = ({ col, currentColumns, refetch, index }: ColProps) => {
   const { mutate } = trpc.boards.addTask.useMutation();
   const [taskForm, setTaskForm] = useState({
     columnId: col.id,
@@ -22,13 +23,18 @@ export const Column = ({ col, currentColumns }: ColProps) => {
     },
   });
 
-  const onSubmit = () => mutate(taskForm);
+  let color = "bg-[#67e2ae]";
+  if ((index + 1) % 3 === 1) {
+    color = "bg-[#49c4e5]";
+  } else if ((index + 1) % 3 === 2) {
+    color = "bg-[#8471f2]";
+  }
 
   return (
-    <div className="my-2 ml-3">
-      <div className="uppercase">
-        <div className="column-icon-color"></div> {col.title} &#40;{" "}
-        {col?.Tasks.length} &#41;
+    <div className="mt-4 min-w-[270px] px-1 first:pl-5 last:pr-5">
+      <div className="heading-s uppercase text-medium_gray">
+        <div className={`${color} column-icon-color`}></div> {col.title} &#40;
+        <span className="mx-[.1rem]">{col?.Tasks.length}</span>&#41;
       </div>
       {col?.Tasks.map((task: any) => {
         return (
@@ -36,6 +42,7 @@ export const Column = ({ col, currentColumns }: ColProps) => {
             task={task}
             currentColumns={currentColumns}
             col={col}
+            refetch={refetch}
             key={task.id}
           />
         );

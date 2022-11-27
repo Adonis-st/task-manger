@@ -19,16 +19,36 @@ a {
   box-sizing: border-box;
 }
 
-.column-icon-color:nth-child(3n -2) {
-  background-color: #49c4e5;
-}
-.column-icon-color:nth-child(3n -1) {
-  background-color: #8471f2;
-}
-.column-icon-color:nth-child(3n) {
-  background-color: #67e2ae;
+.next:checked::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2.22px;
+  left: 5px;
+  width: 4.3px;
+  height: 8px;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
+.next:checked ~ .checkbox-label {
+  @apply text-coal/50 line-through dark:text-white/25;
+}
+
+.select-selected::before {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+.testing3:hover {
+  background-color: pink;
+}
 @layer components {
   /* Typography */
   .heading-xl {
@@ -68,20 +88,28 @@ a {
   }
 
   .btn-secondary-l {
-    @apply heading-m cursor-pointer rounded-full bg-purple/[.15] py-4 px-6 text-purple hover:bg-purple/[.30];
+    @apply heading-m cursor-pointer rounded-full bg-purple/[.15] py-4 px-6 text-purple hover:bg-purple/[.30] dark:bg-white;
   }
 
   .btn-secondary-s {
-    @apply cursor-pointer rounded-full bg-purple/[.15] py-2 px-5 text-purple  hover:bg-purple/[.30];
+    @apply cursor-pointer rounded-full bg-purple/[.15] py-2 px-5 text-purple hover:bg-purple/[.30]  dark:bg-white;
+  }
+
+  .delete-btn {
+    @apply bg-danger text-[0.813rem] font-bold leading-[1.438rem] text-white hover:bg-danger_hover;
   }
 
   /* forms */
   .input-border {
-    @apply rounded-[4px] border border-medium_gray/[.25] px-3;
+    @apply rounded-[4px] border border-medium_gray/25 px-3 dark:bg-dark_gray dark:text-white;
   }
 
   .label-title {
-    @apply text-[.75rem] font-semibold leading-[.938rem] tracking-wide text-medium_gray;
+    @apply text-[.75rem] font-bold leading-[.938rem] tracking-wide text-medium_gray dark:text-white;
+  }
+
+  .form-error-message {
+    @apply text-sm tracking-wide text-red-500;
   }
 
   /* Columns */

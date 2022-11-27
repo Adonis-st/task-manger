@@ -1,0 +1,49 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
+
+export const ProjectData = ({ singleBoard, getAllBoards }: any) => {
+  const router = useRouter();
+  const test = getAllBoards?.length;
+  let newProject;
+  console.log(getAllBoards?.length);
+  console.log(test + "const");
+  if (test < getAllBoards?.length) {
+    newProject = getAllBoards?.[getAllBoards?.length - 1];
+    router.push(`/boards/${newProject?.id}`);
+  }
+
+  return (
+    <>
+      <h4 className="heading-s ml-4 justify-self-center uppercase text-medium_gray">
+        all boards &#40;{getAllBoards?.length}&#41;
+      </h4>
+
+      {getAllBoards?.map((board: any) => (
+        <Link
+          key={board.id}
+          href={`/boards/${board.id}`}
+          className={` ${
+            singleBoard?.id === board.id
+              ? "bg-purple_hover fill-white text-white"
+              : "fill-medium_gray text-medium_gray"
+          } group -m-2 flex items-center rounded-full rounded-l-none px-2 py-4 transition duration-150 ease-in-out hover:bg-purple focus:outline-none focus-visible:ring focus-visible:ring-purple focus-visible:ring-opacity-50 sm:py-0`}
+        >
+          <div className="ml-4 flex h-4 w-5 shrink-0 items-center justify-center sm:h-12 sm:w-12">
+            <svg
+              className="group-hover:fill-white"
+              width="16"
+              height="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M0 2.889A2.889 2.889 0 0 1 2.889 0H13.11A2.889 2.889 0 0 1 16 2.889V13.11A2.888 2.888 0 0 1 13.111 16H2.89A2.889 2.889 0 0 1 0 13.111V2.89Zm1.333 5.555v4.667c0 .859.697 1.556 1.556 1.556h6.889V8.444H1.333Zm8.445-1.333V1.333h-6.89A1.556 1.556 0 0 0 1.334 2.89V7.11h8.445Zm4.889-1.333H11.11v4.444h3.556V5.778Zm0 5.778H11.11v3.11h2a1.556 1.556 0 0 0 1.556-1.555v-1.555Zm0-7.112V2.89a1.555 1.555 0 0 0-1.556-1.556h-2v3.111h3.556Z" />
+            </svg>
+          </div>
+          <div className="ml-2">
+            <p className="heading-m group-hover:text-white">{board.title}</p>
+          </div>
+        </Link>
+      ))}
+    </>
+  );
+};
