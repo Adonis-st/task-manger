@@ -19,8 +19,7 @@ export const createTaskSchema = z.object({
         isCompleted: z.boolean(),
       })
     )
-    .max(5)
-    .optional(),
+    .max(5),
 });
 export type CreateTaskInput = z.TypeOf<typeof createTaskSchema>;
 

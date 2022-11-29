@@ -20,7 +20,7 @@ export const TaskModalOptions = ({ setEditTask, setDeleteTask }: any) => {
       {showTaskOptions && (
         <div className="absolute z-20 ml-[-3.5rem] mt-2 block rounded-md bg-lines_light/90 text-xs font-semibold dark:bg-very_dark_gray">
           <button
-            onClick={() => setEditTask((prevState) => !prevState)}
+            onClick={() => setEditTask((prevState: boolean) => !prevState)}
             className="flex w-full items-center justify-center rounded-t-md py-2 tracking-wide text-medium_gray hover:bg-purple_hover/75 hover:text-white dark:hover:text-coal"
           >
             <MdModeEdit />
@@ -28,7 +28,7 @@ export const TaskModalOptions = ({ setEditTask, setDeleteTask }: any) => {
           </button>
           <hr className=" border-coal/50 dark:border-coal" />
           <button
-            onClick={() => setDeleteTask((prevState) => !prevState)}
+            onClick={() => setDeleteTask((prevState: boolean) => !prevState)}
             className="flex w-max items-center justify-center rounded-b-md py-2 px-4 tracking-wide text-danger hover:bg-danger/90 hover:text-white dark:hover:text-coal"
           >
             <MdDelete />

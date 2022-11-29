@@ -1,4 +1,4 @@
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { VscLoading } from "react-icons/vsc";
 
 interface Props {

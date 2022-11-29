@@ -6,8 +6,6 @@ export const ProjectData = ({ singleBoard, getAllBoards }: any) => {
   const router = useRouter();
   const test = getAllBoards?.length;
   let newProject;
-  console.log(getAllBoards?.length);
-  console.log(test + "const");
   if (test < getAllBoards?.length) {
     newProject = getAllBoards?.[getAllBoards?.length - 1];
     router.push(`/boards/${newProject?.id}`);

@@ -3,9 +3,9 @@ import { trpc } from "../../utils/trpc";
 import Error from "next/error";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Column } from "../components/Column";
+import { Column } from "../../components/Column";
 import Head from "next/head";
-import { Spinner } from "../components/Spinner";
+import { Spinner } from "../../components/Spinner";
 import { useSession } from "next-auth/react";
 
 export default function BoardPage() {

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import {
   UpdateTaskColInput,
   updateTaskColSchema,
   updateSubtaskSchema,
   updateSubtaskInput,
-} from "../../../schema/task.schema";
+} from "../../schema/task.schema";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { VscLoading } from "react-icons/vsc";
 

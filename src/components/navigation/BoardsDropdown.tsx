@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useState, useEffect } from "react";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { Popover, Transition, Switch } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { AddBoardsModal } from "./AddBoardsModal";
@@ -49,14 +49,7 @@ export const BoardsDropdown = ({ handleThemeSwitch, darkMode }: any) => {
 
   return (
     <div className="top-16 w-full max-w-sm  sm:px-3">
-      {displayModal && (
-        <AddBoardsModal
-          setDisplayModal={setDisplayModal}
-          refetch={refetch}
-          getAllBoards={getAllBoards}
-          latestBoard={latestBoard}
-        />
-      )}
+      {displayModal && <AddBoardsModal setDisplayModal={setDisplayModal} />}
       {showSidebar && (
         <div className="fixed top-0 left-0 z-[1] hidden h-full w-[260px] overflow-x-hidden border-r border-lines_light bg-white py-5 dark:border-lines dark:bg-dark_gray sm:block">
           <div className="flex flex-col gap-y-4 pr-8">

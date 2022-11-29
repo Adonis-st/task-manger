@@ -1,27 +1,29 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
-import { boardInput } from "../../../schema/board.schema";
-import { trpc } from "../../../utils/trpc";
-
+import { boardInput } from "../../schema/board.schema";
+import { trpc } from "../../utils/trpc";
+import { VscLoading } from "react-icons/vsc";
 interface Props {
   setDisplayModal: (value: boolean | ((prevState: boolean) => boolean)) => void;
-  refetch: any;
-  getAllBoards: any;
-  latestBoard: any;
 }
 
-export const AddBoardsModal = ({
-  setDisplayModal,
-  refetch,
-  getAllBoards,
-  latestBoard,
-}: Props) => {
+export const AddBoardsModal = ({ setDisplayModal }: Props) => {
   const router = useRouter();
+
   const closeModal = () => setDisplayModal(false);
+  const {
+    data: getAllBoards,
+    refetch,
+    isFetched,
+    isSuccess,
+    isFetching,
+    isRefetching,
+  } = trpc.boards.getAllBoards.useQuery();
   const [boardForm, setBoardForm] = useState({
     title: "",
   });
+
   const [columnsForm, setColumnsForm] = useState([
     { title: "Todo" },
     { title: "Doing" },
@@ -29,8 +31,17 @@ export const AddBoardsModal = ({
   ]);
   // const { data: testing2 } = trpc.boards.findNewBoard.useQuery();
 
-  const { mutate, isSuccess, isIdle } = trpc.boards.addBoard.useMutation({
-    onSuccess: () => {},
+  const gotoNewBoard = () => {
+    if (isRefetching) {
+      const latestBoard = getAllBoards?.[getAllBoards.length - 1];
+      return router.push(`/boards/${latestBoard?.id}`);
+    }
+  };
+
+  const { mutate, isLoading } = trpc.boards.addBoard.useMutation({
+    onSuccess: () => {
+      refetch(), closeModal();
+    },
   });
 
   const addCol = () => {
@@ -70,15 +81,14 @@ export const AddBoardsModal = ({
     e.preventDefault();
     const boardInputs: boardInput = { boardForm, columnsForm };
     mutate(boardInputs);
-    console.log(isSuccess + "sucess");
-    console.log(isIdle + "idle");
-
-    if (isSuccess) {
-      console.log("yess");
-    }
-
+    // gotoNewBoard();
     // router.push(`/boards/${latestBoard?.id}`);
   };
+
+  if (isRefetching) {
+    const latestBoard = getAllBoards?.[getAllBoards.length - 1];
+    console.log(latestBoard?.id + " " + " from inside");
+  }
 
   return (
     <>
@@ -168,7 +178,11 @@ export const AddBoardsModal = ({
                         disabled={!boardForm.title}
                         className="btn-primary-s mb-2 disabled:pointer-events-none disabled:opacity-80"
                       >
-                        Create Board
+                        {isLoading ? (
+                          <VscLoading className="mx-auto h-6 w-6 animate-spin" />
+                        ) : (
+                          "Create Board"
+                        )}
                       </button>
                     </form>
                   </div>

@@ -1,10 +1,10 @@
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { Dialog, Transition, Popover } from "@headlessui/react";
 import { Fragment, useRef, useState } from "react";
 import {
   UpdateTaskColInput,
   ToggleSubTaskInput,
-} from "../../../schema/task.schema";
+} from "../../schema/task.schema";
 import { useRouter } from "next/router";
 import { TaskModalOptions } from "./TaskModalOptions";
 import { EditTaskModal } from "./EditTaskModal";

@@ -1,11 +1,11 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { AddBoardsModal } from "./AddBoardsModal";
 import { BoardsDropdown } from "./BoardsDropdown";
 import { SettingsDropdown } from "../SettingsDropdown";
-import { AddTaskModal } from "./AddTaskModal";
+import { AddTaskModal } from "../Task/AddTaskModal";
 import { useRouter } from "next/router";
 
 export const Nav = () => {

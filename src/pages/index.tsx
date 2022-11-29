@@ -2,8 +2,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
-import { HomeNav } from "./components/Home/HomeNav";
-import { HomeFooter } from "./components/Home/HomeFooter";
+import { HomeNav } from "../components/Home/HomeNav";
+import { HomeFooter } from "../components/Home/HomeFooter";
 
 export default function HomePage() {
   const router = useRouter();

@@ -1,8 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
-import { CreateTaskInput, createTaskSchema } from "../../../schema/task.schema";
-import { trpc } from "../../../utils/trpc";
+import { CreateTaskInput, createTaskSchema } from "../../schema/task.schema";
+import { trpc } from "../../utils/trpc";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { VscLoading } from "react-icons/vsc";
 
@@ -31,6 +31,7 @@ export const AddTaskModal = ({ setIsOpen }: any) => {
   const [formErrors, setFormErrors] = useState({
     title: "",
     description: "",
+    subtask: "",
   });
 
   const [displayColumnDropdown, setDisplayColumnDropdown] = useState(false);

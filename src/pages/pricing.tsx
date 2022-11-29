@@ -1,5 +1,5 @@
 import React from "react";
-import { HomeNav } from "./components/Home/HomeNav";
+import { HomeNav } from "../components/Home/HomeNav";
 
 export default function Pricing() {
   return (

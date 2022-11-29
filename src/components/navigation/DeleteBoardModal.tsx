@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 interface AddBoardsModalProps {
   setDisplayModal: (value: boolean | ((prevState: boolean) => boolean)) => void;
