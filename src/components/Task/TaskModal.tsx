@@ -1,15 +1,11 @@
 import { trpc } from "../../utils/trpc";
 import { Dialog, Transition, Popover } from "@headlessui/react";
-import { Fragment, useRef, useState } from "react";
-import {
-  UpdateTaskColInput,
-  ToggleSubTaskInput,
-} from "../../schema/task.schema";
-import { useRouter } from "next/router";
+import { Fragment, useState } from "react";
+import { UpdateTaskInput } from "../../schema/task.schema";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { TaskModalOptions } from "./TaskModalOptions";
 import { EditTaskModal } from "./EditTaskModal";
 import { DeleteTaskModal } from "./DeleteTaskModal";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 export const TaskModal = ({
   setIsOpen,
@@ -24,78 +20,26 @@ export const TaskModal = ({
   const [deleteTask, setDeleteTask] = useState(false);
 
   const closeModal = () => setIsOpen(false);
-  const [taskForm, setTaskForm] = useState({
-    title: task.title,
-    description: task.description,
-  });
-  const router = useRouter();
-  const boardId = router.query.boardId as string;
-  const { title, description } = taskForm;
 
-  const changeColumn = useRef(thisColumn.id);
-  const test2 = useRef(false);
-  const { mutate: updateTask } = trpc.boards.updateTaskCol.useMutation({
+  const { mutate: updateTask } = trpc.tasks.updateTask.useMutation({
     onSuccess: () => refetch(),
   });
-  const { mutate: toggleSubtask } = trpc.boards.toggleSubTask.useMutation();
-  // const { mutate: updateSubtask } = trpc.boards.updateSubtask.useMutation();
-  // const [subtaskForm, setSubtaskForm] = useState(task?.SubTasks);
+  const { mutate: toggleSubtask } = trpc.tasks.toggleSubTask.useMutation({
+    onSuccess: () => refetch(),
+  });
+
   const changeTaskColumn = (colId: string) => {
-    changeColumn.current = colId;
-    const newColumnId = changeColumn.current;
-    const changedCol: UpdateTaskColInput = {
-      newColumnId,
-      id: task.id,
-      title,
-      description,
-    };
-    updateTask(changedCol);
-    closeModal();
+    if (thisColumn.id !== colId) {
+      const changedCol: UpdateTaskInput = {
+        newColumnId: colId,
+        id: task.id,
+        title: task.title,
+        description: task.description,
+      };
+      updateTask(changedCol);
+      closeModal();
+    }
   };
-
-  // const editSubtask = (e: any, subtaskIndex: number, id: string) => {
-  //   const { value } = e.target;
-  //   // Update Subtask title
-  //   setSubtaskForm((title: any) =>
-  //     title?.map((subtask: any, index: number) =>
-  //       index === subtaskIndex ? { ...subtask, title: value } : subtask
-  //     )
-  //   );
-  //   // const cool = subtask.find((sub: any) => sub.id === id);
-  //   // setSubtaskTitle((prevState) => ({
-  //   //   ...prevState,
-  //   //   title: cool.title,
-  //   // }));
-  //   // console.log(subtaskTitle);
-  // };
-
-  const subtaskOnChange = (sub: any) => {
-    test2.current = !sub.isCompleted;
-    const id = sub.id;
-    const isCompleted = test2.current;
-    const toggle: ToggleSubTaskInput = { id, isCompleted };
-    toggleSubtask(toggle);
-  };
-
-  // const onSubmit = (e: any) => {
-  //   e.preventDefault();
-  //   const id = task.id;
-  //   const changedCol: UpdateTaskColInput = {
-  //     newColumnId,
-  //     id,
-  //     title,
-  //     description,
-  //   };
-
-  //   const updatedSubtask: updateSubtaskInput = { id, subtaskForm };
-  //   updateSubtask(updatedSubtask);
-  //   updateTask(changedCol);
-  //   // closeModal();
-  // };
-
-  // if (true) {
-  //   return null;
-  // }
 
   return (
     <>
@@ -156,13 +100,18 @@ export const TaskModal = ({
                               <input
                                 type="checkbox"
                                 id={sub.id}
-                                onChange={() => subtaskOnChange(sub)}
+                                onChange={() =>
+                                  toggleSubtask({
+                                    id: sub.id,
+                                    isCompleted: !sub.isCompleted,
+                                  })
+                                }
                                 defaultChecked={sub.isCompleted}
-                                className="next relative  ml-3 aspect-square w-4  cursor-pointer appearance-none rounded-sm border border-medium_gray bg-white checked:bg-purple  checked:before:border-white "
+                                className="next relative ml-3 aspect-square w-4 cursor-pointer appearance-none rounded-sm border border-medium_gray bg-white checked:bg-purple checked:before:border-white"
                               />
                               <label
                                 htmlFor={sub.id}
-                                className="checkbox-label w-full cursor-pointer py-2 pl-3  pr-4 text-[.75rem] font-bold leading-[.945rem] dark:text-white"
+                                className="checkbox-label w-full cursor-pointer py-2 pl-3 pr-4 text-[.75rem] font-bold leading-[.945rem] dark:text-white"
                               >
                                 {sub.title}
                               </label>
@@ -185,13 +134,13 @@ export const TaskModal = ({
                                   }  w-5 fill-purple `}
                                 />
                               </Popover.Button>
-                              <Popover.Panel className="absolute mt-12 flex w-full flex-col rounded-md bg-white/95 text-medium_gray  dark:bg-very_dark_gray">
+                              <Popover.Panel className="absolute mt-12 flex w-full flex-col rounded-md bg-white/95 text-medium_gray dark:bg-very_dark_gray">
                                 {currentColumns.map((col: any) => {
                                   return (
                                     <button
                                       onClick={() => changeTaskColumn(col.id)}
+                                      className="w-full py-1 pl-4 text-left first:rounded-t-md last:rounded-b-md hover:bg-gray-200"
                                       key={col.id}
-                                      className=" w-full py-1 pl-4 text-left first:rounded-t-md last:rounded-b-md hover:bg-gray-200"
                                     >
                                       {col.title}
                                     </button>

@@ -1,4 +1,3 @@
-import { trpc } from "../../utils/trpc";
 import { useState } from "react";
 import { TaskModal } from "./TaskModal";
 

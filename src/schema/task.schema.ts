@@ -23,11 +23,7 @@ export const createTaskSchema = z.object({
 });
 export type CreateTaskInput = z.TypeOf<typeof createTaskSchema>;
 
-export const getAllTaskSchema = z.object({
-  boardId: z.string().cuid(),
-});
-
-export const updateTaskColSchema = z.object({
+export const updateTaskSchema = z.object({
   id: z.string().cuid(),
   newColumnId: z.string().cuid(),
   title: z
@@ -39,23 +35,9 @@ export const updateTaskColSchema = z.object({
     .max(300, "Max description length 300 characters")
     .optional(),
 });
-export type UpdateTaskColInput = z.TypeOf<typeof updateTaskColSchema>;
+export type UpdateTaskInput = z.TypeOf<typeof updateTaskSchema>;
 
 //SubTasks
-export const getSubTaskSchema = z.object({
-  tasksId: z.string().cuid(),
-});
-
-export const createSubtaskSchema = z.object({
-  id: z.string().cuid(),
-  data: z.object({
-    title: z.string(),
-    isCompleted: z.boolean(),
-  }),
-});
-
-export type CreateSubTaskInput = z.TypeOf<typeof createSubtaskSchema>;
-
 export const toggleSubtaskSchema = z.object({
   id: z.string().cuid(),
   isCompleted: z.boolean(),

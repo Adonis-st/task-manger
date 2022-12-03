@@ -6,9 +6,12 @@ export const getAllColumnsSchema = z.object({
 
 export const createColumnSchema = z.object({
   boardId: z.string().cuid(),
-  data: z.object({
-    title: z.string().max(35, "Max title length is 35"),
-  }),
+  // title: z.string().max(35, "Max title length is 35"),
+});
+
+export const updateColumnSchema = z.object({
+  columnId: z.string().cuid(),
+  title: z.string().max(35, "Max title length is 35"),
 });
 
 export type CreateColumnInput = z.TypeOf<typeof createColumnSchema>;

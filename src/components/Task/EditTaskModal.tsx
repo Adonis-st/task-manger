@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
 import {
-  UpdateTaskColInput,
-  updateTaskColSchema,
+  UpdateTaskInput,
+  updateTaskSchema,
   updateSubtaskSchema,
   updateSubtaskInput,
 } from "../../schema/task.schema";
@@ -35,11 +35,12 @@ export const EditTaskModal = ({
     subtaskTitle: "",
     subtaskId: "",
   });
+
   const [hideSubtask, setHideSubtask] = useState("");
   const [newColumn, setNewColumn] = useState(thisColumn);
   const { title, description } = taskForm;
 
-  const { mutate: updateSubtask } = trpc.boards.updateSubtask.useMutation({
+  const { mutate: updateSubtask } = trpc.tasks.updateSubtask.useMutation({
     onSuccess: () =>
       setFormErrors((prevState) => ({
         ...prevState,
@@ -48,19 +49,18 @@ export const EditTaskModal = ({
       })),
   });
   const { mutate: updateTask, isLoading: taskIsLoading } =
-    trpc.boards.updateTaskCol.useMutation({
+    trpc.tasks.updateTask.useMutation({
       onSuccess: () => {
         refetch(), setEditTask(false);
       },
     });
 
-  const { mutate: deleteSubtask, isLoading: deleteSubtaskIsLoading } =
-    trpc.boards.deleteSubtask.useMutation({
-      onSuccess: () => refetch(),
-    });
+  const { mutate: deleteSubtask } = trpc.tasks.deleteSubtask.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   const { mutate: addSubtask, isLoading: subtaskIsLoading } =
-    trpc.boards.addSubtask.useMutation({
+    trpc.tasks.addSubtask.useMutation({
       onSuccess: () => refetch(),
     });
 
@@ -71,29 +71,6 @@ export const EditTaskModal = ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
-  };
-
-  const newColumnId: string = newColumn.id;
-
-  const onSubmit = (e: any) => {
-    e.preventDefault();
-    const changedCol: UpdateTaskColInput = {
-      newColumnId,
-      id: task.id,
-      title,
-      description,
-    };
-    const results = updateTaskColSchema.safeParse(changedCol);
-    if (!results.success) {
-      const formattedErrors = results.error.format();
-      setFormErrors((prevState) => ({
-        ...prevState,
-        title: formattedErrors.title?._errors.join(", ") || "",
-        description: formattedErrors.description?._errors.join(", ") || "",
-      }));
-    } else {
-      updateTask(changedCol);
-    }
   };
 
   const changeColumn = (col: any) => {
@@ -107,7 +84,6 @@ export const EditTaskModal = ({
   ) => {
     const results = updateSubtaskSchema.safeParse({ title, id });
     if (!results.success) {
-      console.log(title);
       const formattedErrors = results.error.format();
       setFormErrors((prevState) => ({
         ...prevState,
@@ -120,15 +96,39 @@ export const EditTaskModal = ({
       }
     }
   };
+
   const deletedSubtask = (subId: string) => {
     setHideSubtask(subId);
     deleteSubtask(subId);
+  };
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
+    const changedCol: UpdateTaskInput = {
+      newColumnId: newColumn.id,
+      id: task.id,
+      title,
+      description,
+    };
+
+    //
+    const results = updateTaskSchema.safeParse(changedCol);
+    if (!results.success) {
+      const formattedErrors = results.error.format();
+      setFormErrors((prevState) => ({
+        ...prevState,
+        title: formattedErrors.title?._errors.join(", ") || "",
+        description: formattedErrors.description?._errors.join(", ") || "",
+      }));
+    } else {
+      updateTask(changedCol);
+    }
   };
 
   return (
     <>
       <h3 className="heading-l mb-4 dark:text-white">Edit Task</h3>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <div className="mt-2 flex flex-col gap-y-2">
           <label htmlFor="title" className="label-title">
             Title
@@ -169,17 +169,17 @@ export const EditTaskModal = ({
           </span>
 
           <label className="label-title mt-4">SubTasks</label>
-          {task?.SubTasks?.map((sub: any, index: number) => {
+          {task?.SubTasks?.map((sub: any) => {
             return (
               <div
-                key={sub.id}
                 className={hideSubtask !== sub.id ? "" : "hidden"}
+                key={sub.id}
               >
                 <div className="mb-2 flex w-full items-center">
                   <input
                     type="text"
                     defaultValue={sub.title}
-                    onBlur={(e: any) =>
+                    onBlur={(e) =>
                       updatedSubtask(
                         { title: e.currentTarget.value, id: sub.id },
                         sub.title

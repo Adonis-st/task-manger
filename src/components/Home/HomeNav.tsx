@@ -8,7 +8,7 @@ export const HomeNav = () => {
 
   return (
     <nav>
-      <div className="mx-auto flex w-11/12 items-center justify-between py-2">
+      <div className="mx-auto flex w-11/12 items-center justify-between py-2 sm:mb-8">
         <Link href={"/"} className="flex items-center ">
           <svg width="24" height="25" xmlns="http://www.w3.org/2000/svg">
             <g fill="#635FC7" fillRule="evenodd">
@@ -21,10 +21,15 @@ export const HomeNav = () => {
             kanban
           </span>
         </Link>
-
+        <button
+          onClick={() => signIn()}
+          className="btn-primary-s hidden sm:block"
+        >
+          Login
+        </button>
         <button
           onClick={() => setHamburgerMenu((prevState) => !prevState)}
-          className=""
+          className="sm:hidden"
         >
           {hamburgerMenu ? (
             <MdMenuOpen className="h-8 w-8" />
@@ -34,8 +39,8 @@ export const HomeNav = () => {
         </button>
       </div>
       {hamburgerMenu && (
-        <div className="flex flex-col">
-          <Link href={"/pricing"}> Pricing</Link>
+        <div className="flex flex-col sm:hidden">
+          {/* <Link href={"/pricing"}> Pricing</Link> */}
           <button
             onClick={() => signIn()}
             className="btn-primary-s mx-auto w-10/12"

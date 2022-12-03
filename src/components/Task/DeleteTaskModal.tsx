@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const DeleteTaskModal = ({ task, refetch, closeModal }: Props) => {
-  const { mutate: deleteTask, isLoading } = trpc.boards.deleteTask.useMutation({
+  const { mutate: deleteTask, isLoading } = trpc.tasks.deleteTask.useMutation({
     onSuccess: () => {
       refetch(), closeModal();
     },

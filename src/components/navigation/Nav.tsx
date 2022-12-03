@@ -1,14 +1,20 @@
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { trpc } from "../../utils/trpc";
-import { AddBoardsModal } from "./AddBoardsModal";
-import { BoardsDropdown } from "./BoardsDropdown";
-import { SettingsDropdown } from "../SettingsDropdown";
-import { AddTaskModal } from "../Task/AddTaskModal";
-import { useRouter } from "next/router";
+import { BoardsDropdown } from "../board/BoardsDropdown";
+import { OptionsDropdown } from "../OptionsDropdown";
+import { AddTaskModal } from "../task/AddTaskModal";
+import { BsPlusLg } from "react-icons/bs";
 
-export const Nav = () => {
+interface Props {
+  toggleSideBar: boolean;
+  setToggleSideBar: (
+    value: boolean | ((prevState: boolean) => boolean)
+  ) => void;
+}
+
+export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,39 +59,28 @@ export const Nav = () => {
               </span>
             </Link>
 
-            {true && (
-              <BoardsDropdown
-                handleThemeSwitch={handleThemeSwitch}
-                darkMode={darkMode}
-              />
-            )}
+            <BoardsDropdown
+              toggleSideBar={toggleSideBar}
+              setToggleSideBar={setToggleSideBar}
+              handleThemeSwitch={handleThemeSwitch}
+              darkMode={darkMode}
+            />
           </div>
 
           <div className="flex items-center">
             <button
               onClick={() => setIsOpen((prevState) => !prevState)}
               disabled={router.pathname === "/" ? true : false}
-              className="btn-primary-s mr-1 disabled:pointer-events-none disabled:opacity-40 sm:flex"
+              className="btn-primary-s mr-1 flex items-center  disabled:pointer-events-none disabled:opacity-40"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-5 w-5 sm:hidden"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-              <span className="hidden text-sm sm:inline-block">
-                + {"  "}Add New Task
+              <BsPlusLg className="h-3 w-3 sm:h-2 sm:w-2" />
+
+              <span className="ml-1 hidden text-sm sm:inline-block">
+                Add New Task
               </span>
             </button>
-            {true && <SettingsDropdown />}
+
+            <OptionsDropdown />
           </div>
         </div>
       </nav>

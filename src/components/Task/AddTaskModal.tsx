@@ -9,14 +9,20 @@ import { VscLoading } from "react-icons/vsc";
 export const AddTaskModal = ({ setIsOpen }: any) => {
   const router = useRouter();
   const boardId = router.query.boardId as string;
-  const { data: columns } = trpc.boards.getAllColumns.useQuery({
-    boardId,
-  });
-  const { data: singleBoard, refetch } = trpc.boards.singleBoard.useQuery({
-    boardId,
-  });
+  const { data: columns } = trpc.columns.getAllColumns.useQuery(
+    {
+      boardId,
+    },
+    { refetchOnWindowFocus: false }
+  );
+  const { refetch } = trpc.boards.singleBoard.useQuery(
+    {
+      boardId,
+    },
+    { refetchOnWindowFocus: false }
+  );
 
-  const { mutate: addTask, isLoading } = trpc.boards.addTask.useMutation({
+  const { mutate: addTask, isLoading } = trpc.tasks.addTask.useMutation({
     onSuccess: () => {
       refetch(), closeModal();
     },

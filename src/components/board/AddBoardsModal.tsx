@@ -1,25 +1,17 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
 import { boardInput } from "../../schema/board.schema";
 import { trpc } from "../../utils/trpc";
 import { VscLoading } from "react-icons/vsc";
+
 interface Props {
   setDisplayModal: (value: boolean | ((prevState: boolean) => boolean)) => void;
 }
 
 export const AddBoardsModal = ({ setDisplayModal }: Props) => {
-  const router = useRouter();
-
   const closeModal = () => setDisplayModal(false);
-  const {
-    data: getAllBoards,
-    refetch,
-    isFetched,
-    isSuccess,
-    isFetching,
-    isRefetching,
-  } = trpc.boards.getAllBoards.useQuery();
+  const { refetch } = trpc.boards.getAllBoards.useQuery();
+
   const [boardForm, setBoardForm] = useState({
     title: "",
   });
@@ -29,14 +21,6 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
     { title: "Doing" },
     { title: "Done" },
   ]);
-  // const { data: testing2 } = trpc.boards.findNewBoard.useQuery();
-
-  const gotoNewBoard = () => {
-    if (isRefetching) {
-      const latestBoard = getAllBoards?.[getAllBoards.length - 1];
-      return router.push(`/boards/${latestBoard?.id}`);
-    }
-  };
 
   const { mutate, isLoading } = trpc.boards.addBoard.useMutation({
     onSuccess: () => {
@@ -77,18 +61,11 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
     }));
   };
 
-  const onSubmit = (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     const boardInputs: boardInput = { boardForm, columnsForm };
     mutate(boardInputs);
-    // gotoNewBoard();
-    // router.push(`/boards/${latestBoard?.id}`);
   };
-
-  if (isRefetching) {
-    const latestBoard = getAllBoards?.[getAllBoards.length - 1];
-    console.log(latestBoard?.id + " " + " from inside");
-  }
 
   return (
     <>
@@ -122,7 +99,10 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
                     Add New Board
                   </Dialog.Title>
                   <div className="mt-2">
-                    <form onSubmit={onSubmit} className="flex flex-col gap-y-2">
+                    <form
+                      onSubmit={handleSubmit}
+                      className="flex flex-col gap-y-2"
+                    >
                       <label htmlFor="title" className="label-title">
                         Board Name
                       </label>
@@ -149,14 +129,14 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
                             <button
                               type="button"
                               onClick={() => removeCol(index)}
-                              className="ml-2 inline-block rounded-full p-1 "
+                              className="ml-1 inline-block fill-[#828FA3] p-2 hover:fill-danger "
                             >
                               <svg
                                 width="15"
                                 height="15"
                                 xmlns="http://www.w3.org/2000/svg"
                               >
-                                <g fill="#828FA3" fillRule="evenodd">
+                                <g fillRule="evenodd">
                                   <path d="m12.728 0 2.122 2.122L2.122 14.85 0 12.728z" />
                                   <path d="M0 2.122 2.122 0 14.85 12.728l-2.122 2.122z" />
                                 </g>
@@ -175,7 +155,6 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
 
                       <button
                         type="submit"
-                        disabled={!boardForm.title}
                         className="btn-primary-s mb-2 disabled:pointer-events-none disabled:opacity-80"
                       >
                         {isLoading ? (
