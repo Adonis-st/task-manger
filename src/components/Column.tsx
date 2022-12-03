@@ -1,4 +1,4 @@
-import { Task } from "./task/Task";
+import { Task } from "./tasks/Task";
 interface ColProps {
   col: {
     title: string;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { BoardsDropdown } from "../board/BoardsDropdown";
 import { OptionsDropdown } from "../OptionsDropdown";
-import { AddTaskModal } from "../task/AddTaskModal";
+import { AddTaskModal } from "../tasks/AddTaskModal";
 import { BsPlusLg } from "react-icons/bs";
 
 interface Props {
