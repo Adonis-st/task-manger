@@ -23,7 +23,6 @@ export default function BoardPage() {
     { refetchOnWindowFocus: false }
   );
 
-  // const isEmpty = singleBoard?.columns.length === 0;
   const currentColumns = singleBoard?.columns;
 
   const { mutate: addColumn, isLoading: addColumnIsLoading } =
@@ -50,14 +49,6 @@ export default function BoardPage() {
       </Head>
 
       <div>
-        {/* {isEmpty && (
-          <div>
-            This board is empty Create a new Column to get Started.
-            <button onClick={onSubmit} className="btn-primary-s">
-              + Add New Column
-            </button>
-          </div>
-        )} */}
         <div className="grid h-[91vh] auto-cols-max grid-flow-col gap-x-4 overflow-x-auto">
           {singleBoard?.columns.map((col, index) => {
             return (
@@ -73,7 +64,7 @@ export default function BoardPage() {
           {singleBoard?.columns.length < 4 && (
             <button
               onClick={() => addColumn({ boardId })}
-              className="heading-xl mt-4 mr-8 hidden h-[95%] min-w-[270px] bg-[#E9EFFA] text-medium_gray shadow-md hover:text-purple lg:block"
+              className="heading-xl mt-4 mr-8 hidden h-[95%] min-w-[270px] bg-[#E9EFFA] text-medium_gray shadow-md hover:text-purple dark:bg-[#2B2C37]/25 lg:block"
             >
               {addColumnIsLoading ? (
                 <VscLoading className="mx-auto h-12 w-12 animate-spin" />
