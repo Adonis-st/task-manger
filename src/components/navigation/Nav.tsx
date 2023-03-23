@@ -19,6 +19,7 @@ export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
   const { data: sessionData } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
   const handleThemeSwitch = () => setDarkMode((prevState) => !prevState);
   useEffect(() => {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -36,9 +37,7 @@ export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
     }
   }, [darkMode]);
 
-  if (!sessionData) {
-    return null;
-  }
+  if (!sessionData?.user) return null;
 
   return (
     <div className="sticky top-0 bg-white shadow-sm dark:bg-dark_gray">

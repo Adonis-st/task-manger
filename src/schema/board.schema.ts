@@ -5,15 +5,13 @@ export const getSingleBoardSchema = z.object({
 });
 
 export const boardSchema = z.object({
-  boardForm: z.object({
-    title: z.string().max(35, "Max title length is 35"),
-  }),
+  title: z.string().max(35, "Max title length is 35"),
   columnsForm: z
     .array(z.object({ title: z.string().max(35, "Max title length is 35") }))
     .min(1)
     .max(4),
 });
-export type boardInput = z.TypeOf<typeof boardSchema>;
+export type BoardInput = z.TypeOf<typeof boardSchema>;
 
 export const updateBoardSchema = z.object({
   title: z.string().max(35, "Max title length is 35"),

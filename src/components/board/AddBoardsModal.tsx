@@ -1,7 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Fragment, useState } from "react";
-import { boardInput } from "../../schema/board.schema";
-import { trpc } from "../../utils/trpc";
+import type { BoardInput } from "~/schema/board.schema";
+import { trpc } from "~/utils/trpc";
 import { VscLoading } from "react-icons/vsc";
 
 interface Props {
@@ -10,11 +11,8 @@ interface Props {
 
 export const AddBoardsModal = ({ setDisplayModal }: Props) => {
   const closeModal = () => setDisplayModal(false);
-  const { refetch } = trpc.boards.getAllBoards.useQuery();
 
-  const [boardForm, setBoardForm] = useState({
-    title: "",
-  });
+  const [boardTitle, setBoardTitle] = useState("");
 
   const [columnsForm, setColumnsForm] = useState([
     { title: "Todo" },
@@ -22,9 +20,11 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
     { title: "Done" },
   ]);
 
-  const { mutate, isLoading } = trpc.boards.addBoard.useMutation({
+  const utils = trpc.useContext();
+
+  const { mutate: addBoard, isLoading } = trpc.boards.addBoard.useMutation({
     onSuccess: () => {
-      refetch(), closeModal();
+      utils.boards.getAllBoards.invalidate(), closeModal();
     },
   });
 
@@ -46,7 +46,10 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
     setColumnsForm(removedCol);
   };
 
-  const columnOnChange = (e: any, colIndex: number) => {
+  const columnOnChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    colIndex: number
+  ) => {
     const { value } = e.target;
     setColumnsForm((title) =>
       title?.map((col, index) =>
@@ -54,17 +57,11 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
       )
     );
   };
-  const boardOnChange = (e: any) => {
-    setBoardForm((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const boardInputs: boardInput = { boardForm, columnsForm };
-    mutate(boardInputs);
+    const newBoard: BoardInput = { title: boardTitle, columnsForm };
+    addBoard(newBoard);
   };
 
   return (
@@ -110,8 +107,8 @@ export const AddBoardsModal = ({ setDisplayModal }: Props) => {
                         type="text"
                         name="title"
                         id="title"
-                        value={boardForm.title}
-                        onChange={boardOnChange}
+                        value={boardTitle}
+                        onChange={(e) => setBoardTitle(e.target.value)}
                         placeholder="e.g. Web Design"
                         className="input-border body-l py-2"
                       />

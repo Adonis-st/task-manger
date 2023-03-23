@@ -3,6 +3,7 @@
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,7 +15,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -23,7 +28,7 @@
     "**/*.cjs",
     "**/*.mjs",
     "src/pages/api/auth/[...nextauth].ts",
-    "src/pages/_document.js"
+    "src/pages/_document.ts"
   ],
   "exclude": ["node_modules"]
 }

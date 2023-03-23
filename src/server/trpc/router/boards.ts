@@ -1,13 +1,13 @@
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import {
   getSingleBoardSchema,
   boardSchema,
   updateBoardSchema,
-} from "../../../schema/board.schema";
+} from "~/schema/board.schema";
 
 export const boardsRouter = router({
-  getAllBoards: publicProcedure.query(({ ctx }) => {
+  getAllBoards: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.boards.findMany({
       where: {
         userId: ctx.session?.user?.id,
@@ -15,9 +15,8 @@ export const boardsRouter = router({
     });
   }),
 
-  addBoard: publicProcedure.input(boardSchema).mutation(({ ctx, input }) => {
-    const { boardForm, columnsForm } = input;
-    const { title } = boardForm;
+  addBoard: protectedProcedure.input(boardSchema).mutation(({ ctx, input }) => {
+    const { title, columnsForm } = input;
     return ctx.prisma.boards.create({
       data: {
         title,
@@ -35,7 +34,7 @@ export const boardsRouter = router({
     });
   }),
 
-  singleBoard: publicProcedure
+  singleBoard: protectedProcedure
     .input(getSingleBoardSchema)
     .query(({ ctx, input }) => {
       const { boardId } = input;
@@ -57,7 +56,7 @@ export const boardsRouter = router({
       });
     }),
 
-  getSingleBoard: publicProcedure
+  getSingleBoard: protectedProcedure
     .input(getSingleBoardSchema)
     .query(({ ctx, input }) => {
       const { boardId: id } = input;
@@ -68,7 +67,7 @@ export const boardsRouter = router({
       });
     }),
 
-  updateBoard: publicProcedure
+  updateBoard: protectedProcedure
     .input(updateBoardSchema)
     .mutation(({ ctx, input }) => {
       const { boardId: id, title } = input;
@@ -82,7 +81,7 @@ export const boardsRouter = router({
       });
     }),
 
-  deleteBoard: publicProcedure
+  deleteBoard: protectedProcedure
     .input(z.string().cuid())
     .mutation(({ ctx, input: id }) => {
       return ctx.prisma.boards.delete({

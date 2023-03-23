@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "~/utils/trpc";
 import { Transition, Switch, Dialog } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { AddBoardsModal } from "./AddBoardsModal";

@@ -116,8 +116,4 @@ a {
   .column-icon-color {
     @apply inline-block aspect-square w-3 rounded-full;
   }
-
-  /* .test p {
-    background-color: green;
-  } */
 }
