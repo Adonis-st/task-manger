@@ -6,25 +6,16 @@ import { Transition, Switch, Dialog } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { AddBoardsModal } from "./AddBoardsModal";
 import { ProjectData } from "../navigation/ProjectData";
+import { useAtom } from "jotai";
+import { darkModeAtom, showSideBarAtom } from "~/store";
 
-interface Props {
-  toggleSideBar: boolean;
-  setToggleSideBar: (
-    value: boolean | ((prevState: boolean) => boolean)
-  ) => void;
-  handleThemeSwitch: () => void;
-  darkMode: boolean;
-}
-export const BoardsDropdown = ({
-  toggleSideBar,
-  setToggleSideBar,
-  handleThemeSwitch,
-  darkMode,
-}: Props) => {
+export const BoardsDropdown = () => {
   const router = useRouter();
   const boardId = router.query.boardId as string;
   const [displayModal, setDisplayModal] = useState(false);
   const [displayMobileMenu, setDisplayMobileMenu] = useState(false);
+  const [darkMode, setDarkMode] = useAtom(darkModeAtom);
+  const [showSideBar, setShowSideBar] = useAtom(showSideBarAtom);
 
   const { data: singleBoard } = trpc.boards.singleBoard.useQuery(
     {
@@ -40,7 +31,7 @@ export const BoardsDropdown = ({
     <div className="top-16 w-full max-w-sm sm:px-3">
       {displayModal && <AddBoardsModal setDisplayModal={setDisplayModal} />}
 
-      {toggleSideBar && (
+      {showSideBar && (
         <div className="fixed top-0 left-0 hidden h-full w-[260px] overflow-x-hidden border-r border-lines_light bg-white py-5 dark:border-lines dark:bg-dark_gray sm:block xl:w-[300px]">
           <div className="flex flex-col gap-y-4 pr-8">
             <Link href={"/"} className=" ml-3 mb-5 flex  items-center">
@@ -77,7 +68,7 @@ export const BoardsDropdown = ({
 
           <div className="absolute bottom-[7%] left-0 w-full">
             <button
-              onClick={handleThemeSwitch}
+              onClick={() => setDarkMode((prevState) => !prevState)}
               className="mx-auto mb-2 block w-10/12 rounded-md bg-light_gray px-2 py-3 transition duration-150 ease-in-out hover:bg-medium_gray/20 dark:bg-very_dark_gray dark:hover:bg-coal/50"
             >
               <div className="flex items-center justify-center">
@@ -121,8 +112,8 @@ pointer-events-none inline-block h-[17px] w-[17px] transform self-center rounded
             </button>
 
             <button
-              onClick={() => setToggleSideBar((prevState) => !prevState)}
-              className=" flex w-11/12 items-center self-center rounded-r-full fill-[#828FA3] py-3 pr-2 pl-5 text-medium_gray hover:bg-purple/10 hover:fill-purple hover:text-purple dark:hover:bg-white"
+              onClick={() => setShowSideBar((prevState) => !prevState)}
+              className="flex w-11/12 items-center self-center rounded-r-full fill-[#828FA3] py-3 pr-2 pl-5 text-medium_gray hover:bg-purple/10 hover:fill-purple hover:text-purple dark:hover:bg-white"
             >
               <svg width="18" height="16" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8.522 11.223a4.252 4.252 0 0 1-3.654-5.22l3.654 5.22ZM9 12.25A8.685 8.685 0 0 1 1.5 8a8.612 8.612 0 0 1 2.76-2.864l-.86-1.23A10.112 10.112 0 0 0 .208 7.238a1.5 1.5 0 0 0 0 1.524A10.187 10.187 0 0 0 9 13.75c.414 0 .828-.025 1.239-.074l-1-1.43A8.88 8.88 0 0 1 9 12.25Zm8.792-3.488a10.14 10.14 0 0 1-4.486 4.046l1.504 2.148a.375.375 0 0 1-.092.523l-.648.453a.375.375 0 0 1-.523-.092L3.19 1.044A.375.375 0 0 1 3.282.52L3.93.068a.375.375 0 0 1 .523.092l1.735 2.479A10.308 10.308 0 0 1 9 2.25c3.746 0 7.031 2 8.792 4.988a1.5 1.5 0 0 1 0 1.524ZM16.5 8a8.674 8.674 0 0 0-6.755-4.219A1.75 1.75 0 1 0 12.75 5v-.001a4.25 4.25 0 0 1-1.154 5.366l.834 1.192A8.641 8.641 0 0 0 16.5 8Z" />
@@ -133,9 +124,9 @@ pointer-events-none inline-block h-[17px] w-[17px] transform self-center rounded
         </div>
       )}
 
-      {!toggleSideBar && (
+      {!showSideBar && (
         <button
-          onClick={() => setToggleSideBar((prevState) => !prevState)}
+          onClick={() => setShowSideBar((prevState) => !prevState)}
           className="fixed bottom-[5%] left-0 z-[1] hidden  rounded-r-full bg-purple py-4 pl-3 pr-4 hover:bg-purple_hover sm:block"
         >
           <svg width="16" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -148,7 +139,7 @@ pointer-events-none inline-block h-[17px] w-[17px] transform self-center rounded
       )}
       <div
         className={`${
-          toggleSideBar ? "ml-24 xl:ml-32" : " ml-3 "
+          showSideBar ? "ml-24 xl:ml-32" : " ml-3 "
         }  hidden sm:block `}
       >
         <h1 className="heading-l min-w-[120px] max-w-fit dark:text-white">
@@ -234,7 +225,7 @@ pointer-events-none inline-block h-[17px] w-[17px] transform self-center rounded
 
                       <div className="bg-white p-4 dark:bg-dark_gray">
                         <button
-                          onClick={() => handleThemeSwitch()}
+                          onClick={() => setDarkMode((prevState) => !prevState)}
                           className="w-full rounded-md bg-light_gray px-2 py-4 transition duration-150 ease-in-out dark:bg-very_dark_gray"
                         >
                           <div className="flex items-center justify-center">

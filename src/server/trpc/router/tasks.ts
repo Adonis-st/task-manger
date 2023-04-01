@@ -1,14 +1,14 @@
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import {
   createTaskSchema,
   updateTaskSchema,
   toggleSubtaskSchema,
   updateSubtaskSchema,
-} from "../../../schema/task.schema";
+} from "~/schema/task.schema";
 
 export const tasksRouter = router({
-  addTask: publicProcedure
+  addTask: protectedProcedure
     .input(createTaskSchema)
     .mutation(({ ctx, input }) => {
       const { columnId: id, taskForm, subtaskData } = input;
@@ -31,7 +31,7 @@ export const tasksRouter = router({
       });
     }),
 
-  deleteTask: publicProcedure
+  deleteTask: protectedProcedure
     .input(z.string().cuid())
     .mutation(({ ctx, input: id }) => {
       return ctx.prisma.tasks.delete({
@@ -41,7 +41,7 @@ export const tasksRouter = router({
       });
     }),
 
-  updateTask: publicProcedure
+  updateTask: protectedProcedure
     .input(updateTaskSchema)
     .mutation(({ ctx, input }) => {
       const { id, newColumnId: columnId, title, description } = input;
@@ -57,7 +57,40 @@ export const tasksRouter = router({
       });
     }),
 
-  addSubtask: publicProcedure
+  // Todo Fix this
+  // updateTask: protectedProcedure
+  //   .input(updateTaskSchema)
+  //   .mutation(({ ctx, input }) => {
+  //     const { id, newColumnId: columnId, title, description, subtasks } = input;
+  //     return ctx.prisma.$transaction([
+  //       ctx.prisma.subTasks.deleteMany({ where: { taskId: id } }),
+  //       ctx.prisma.tasks.update({
+  //         where: { id },
+  //         data: {
+  //           title,
+  //           description,
+  //           columnId,
+  //           SubTasks: {
+  //             createMany: {
+  //               data: subtasks,
+  //             },
+  //           },
+  //         },
+  //       }),
+  //     ]);
+  //   }),
+
+  changeTaskColumn: protectedProcedure
+    .input(z.object({ id: z.string().cuid(), columnId: z.string() }))
+    .mutation(({ ctx, input }) => {
+      const { id, columnId } = input;
+      return ctx.prisma.tasks.update({
+        where: { id },
+        data: { columnId },
+      });
+    }),
+
+  addSubtask: protectedProcedure
     .input(z.string().cuid())
     .mutation(({ ctx, input: id }) => {
       return ctx.prisma.subTasks.create({
@@ -73,7 +106,7 @@ export const tasksRouter = router({
       });
     }),
 
-  updateSubtask: publicProcedure
+  updateSubtask: protectedProcedure
     .input(updateSubtaskSchema)
     .mutation(({ ctx, input }) => {
       const { id, title } = input;
@@ -87,7 +120,7 @@ export const tasksRouter = router({
       });
     }),
 
-  deleteSubtask: publicProcedure
+  deleteSubtask: protectedProcedure
     .input(z.string().cuid())
     .mutation(({ ctx, input: id }) => {
       return ctx.prisma.subTasks.delete({
@@ -97,7 +130,7 @@ export const tasksRouter = router({
       });
     }),
 
-  toggleSubTask: publicProcedure
+  toggleSubTask: protectedProcedure
     .input(toggleSubtaskSchema)
     .mutation(({ ctx, input }) => {
       const { id, isCompleted } = input;

@@ -6,28 +6,15 @@ import { BoardsDropdown } from "../board/BoardsDropdown";
 import { OptionsDropdown } from "../OptionsDropdown";
 import { AddTaskModal } from "../tasks/AddTaskModal";
 import { BsPlusLg } from "react-icons/bs";
+import { darkModeAtom, showSideBarAtom } from "~/store";
+import { useAtom } from "jotai";
 
-interface Props {
-  toggleSideBar: boolean;
-  setToggleSideBar: (
-    value: boolean | ((prevState: boolean) => boolean)
-  ) => void;
-}
-
-export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
+export const Nav = () => {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-
-  const handleThemeSwitch = () => setDarkMode((prevState) => !prevState);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setDarkMode(true);
-    } else {
-      setDarkMode(false);
-    }
-  }, []);
+  const [darkMode] = useAtom(darkModeAtom);
+  const [showSideBar] = useAtom(showSideBarAtom);
 
   useEffect(() => {
     if (darkMode) {
@@ -40,7 +27,11 @@ export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
   if (!sessionData?.user) return null;
 
   return (
-    <div className="sticky top-0 bg-white shadow-sm dark:bg-dark_gray">
+    <div
+      className={`${
+        showSideBar ? "" : ""
+      } sticky top-0 bg-white shadow-sm dark:bg-dark_gray`}
+    >
       {isOpen && <AddTaskModal setIsOpen={setIsOpen} />}
       <nav className="mx-auto w-11/12 sm:mx-0">
         <div className="mx-auto flex max-w-[22.5rem] items-center justify-between py-3 sm:mx-0 sm:ml-6 sm:max-w-none">
@@ -58,12 +49,7 @@ export const Nav = ({ toggleSideBar, setToggleSideBar }: Props) => {
               </span>
             </Link>
 
-            <BoardsDropdown
-              toggleSideBar={toggleSideBar}
-              setToggleSideBar={setToggleSideBar}
-              handleThemeSwitch={handleThemeSwitch}
-              darkMode={darkMode}
-            />
+            <BoardsDropdown />
           </div>
 
           <div className="flex items-center">

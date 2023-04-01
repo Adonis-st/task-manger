@@ -34,6 +34,14 @@ export const updateTaskSchema = z.object({
     .string()
     .max(300, "Max description length 300 characters")
     .optional(),
+  // subtasks: z
+  //   .array(
+  //     z.object({
+  //       title: z.string().max(50, "Title can't be longer than 50 characters"),
+  //       isCompleted: z.boolean(),
+  //     })
+  //   )
+  //   .max(5),
 });
 export type UpdateTaskInput = z.TypeOf<typeof updateTaskSchema>;
 

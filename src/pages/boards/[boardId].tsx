@@ -2,13 +2,17 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import Error from "next/error";
 import { trpc } from "../../utils/trpc";
-import { Column } from "../../components/Column";
 import { Spinner } from "../../components/Spinner";
 import { useSession } from "next-auth/react";
 import { VscLoading } from "react-icons/vsc";
+import { useEffect, useState } from "react";
+import { TaskModal } from "~/components/tasks/TaskModal";
+import type { Columns, SubTasks, Tasks } from "@prisma/client";
 
 export default function BoardPage() {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const unAuthorized = sessionStatus === "unauthenticated";
+  const loading = sessionStatus === "loading";
   const router = useRouter();
 
   const boardId = router.query.boardId as string;
@@ -28,17 +32,23 @@ export default function BoardPage() {
   const { mutate: addColumn, isLoading: addColumnIsLoading } =
     trpc.columns.addColumn.useMutation({ onSuccess: () => refetch() });
 
-  if (!sessionData) {
-    return null;
-  }
+  useEffect(() => {
+    // check if the session is loading or the router is not ready
+    if (loading || !router.isReady) return;
 
-  if (isLoading) {
-    return <Spinner />;
-  }
+    // if the user is not authorized, redirect to the login page
+    // with a return url to the current page
+    if (unAuthorized) {
+      void router.push({
+        pathname: "/login",
+        query: { returnUrl: router.asPath },
+      });
+    }
+  }, [loading, sessionStatus, router, unAuthorized]);
 
-  if (!singleBoard) {
-    return <Error statusCode={404} />;
-  }
+  if (loading || isLoading) return <Spinner />;
+
+  if (!singleBoard) return <Error statusCode={404} />;
 
   return (
     <>
@@ -56,7 +66,6 @@ export default function BoardPage() {
                 key={col.id}
                 col={col}
                 currentColumns={currentColumns}
-                refetch={refetch}
                 index={index}
               />
             );
@@ -78,3 +87,82 @@ export default function BoardPage() {
     </>
   );
 }
+
+interface ColProps {
+  col: Columns & {
+    Tasks: (Tasks & {
+      SubTasks: SubTasks[];
+    })[];
+  };
+  currentColumns:
+    | (Columns & {
+        Tasks: (Tasks & {
+          SubTasks: SubTasks[];
+        })[];
+      })[]
+    | undefined;
+
+  index: number;
+}
+
+const Column = ({ col, currentColumns, index }: ColProps) => {
+  let color = "bg-[#67e2ae]";
+  if ((index + 1) % 3 === 1) {
+    color = "bg-[#49c4e5]";
+  } else if ((index + 1) % 3 === 2) {
+    color = "bg-[#8471f2]";
+  }
+
+  return (
+    <div className="mt-4 min-w-[270px] px-1 first:pl-5  last:pr-8">
+      <div className="heading-s uppercase text-medium_gray">
+        <div className={`${color} column-icon-color`}></div> {col.title} &#40;
+        <span className="mx-[.1rem]">{col?.Tasks.length}</span>&#41;
+      </div>
+      {col?.Tasks.map((task: any) => {
+        return (
+          <Task
+            task={task}
+            currentColumns={currentColumns}
+            col={col}
+            key={task.id}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const Task = ({ task, currentColumns, col }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const completedSubtask = [...task?.SubTasks].filter(
+    (subtask) => subtask.isCompleted !== false
+  );
+
+  return (
+    <div
+      onClick={() => setIsOpen((prevState) => !prevState)}
+      className="my-5 flex min-w-[280px] cursor-pointer flex-col gap-y-3 rounded-md bg-white py-5 px-4 shadow-md dark:bg-dark_gray"
+    >
+      <h4 className="heading-m text-coal dark:text-white">{task.title}</h4>
+
+      <span className="body-m text-medium_gray">
+        {task?.SubTasks.length
+          ? `${completedSubtask.length} of
+          ${task?.SubTasks.length} `
+          : "No Subtasks"}
+      </span>
+
+      {isOpen && (
+        <TaskModal
+          setIsOpen={setIsOpen}
+          task={task}
+          currentColumns={currentColumns}
+          thisColumn={col}
+          completedSubtask={completedSubtask}
+        />
+      )}
+    </div>
+  );
+};

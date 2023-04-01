@@ -1,4 +1,4 @@
-import { router, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import {
   createColumnSchema,
@@ -6,7 +6,7 @@ import {
 } from "../../../schema/column.schema";
 
 export const columnRouter = router({
-  getAllColumns: publicProcedure
+  getAllColumns: protectedProcedure
     .input(z.object({ boardId: z.string().cuid() }))
     .query(({ ctx, input }) => {
       const { boardId } = input;
@@ -17,7 +17,7 @@ export const columnRouter = router({
       });
     }),
 
-  addColumn: publicProcedure
+  addColumn: protectedProcedure
     .input(createColumnSchema)
     .mutation(({ ctx, input }) => {
       const { boardId: id } = input;
@@ -33,7 +33,7 @@ export const columnRouter = router({
       });
     }),
 
-  updateColumn: publicProcedure
+  updateColumn: protectedProcedure
     .input(updateColumnSchema)
     .mutation(({ ctx, input }) => {
       const { columnId: id, title } = input;
@@ -47,7 +47,7 @@ export const columnRouter = router({
       });
     }),
 
-  deleteColumn: publicProcedure
+  deleteColumn: protectedProcedure
     .input(z.string().cuid())
     .mutation(({ ctx, input: id }) => {
       return ctx.prisma.columns.delete({

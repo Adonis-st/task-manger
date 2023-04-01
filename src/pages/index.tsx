@@ -1,21 +1,33 @@
+import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
-import { trpc } from "../utils/trpc";
-import { HomeNav } from "../components/Home/HomeNav";
-import { type NextPage } from "next";
 import { useEffect } from "react";
+import { Spinner } from "~/components/Spinner";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status: sessionStatus } = useSession();
+  const unAuthorized = sessionStatus === "unauthenticated";
+  const loading = sessionStatus === "loading";
   const { data: boards } = trpc.boards.getAllBoards.useQuery();
 
   useEffect(() => {
-    if (!sessionData?.user) {
-      void router.push("/login");
+    // check if the session is loading or the router is not ready
+    if (loading || !router.isReady) return;
+
+    // if the user is not authorized, redirect to the login page
+    // with a return url to the current page
+    if (unAuthorized) {
+      void router.push({
+        pathname: "/login",
+        query: { returnUrl: router.asPath },
+      });
     }
-  }, [sessionData?.user]);
+  }, [loading, sessionStatus, router, unAuthorized]);
+
+  if (loading) return <Spinner />;
 
   if (boards?.length) {
     void router.push(`/boards/${boards?.[0]?.id}`);
